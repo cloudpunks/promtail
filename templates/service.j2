@@ -1,0 +1,36 @@
+[Unit]
+Description=promtail
+Wants=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+RestartSec=10s
+
+EnvironmentFile=/etc/environment
+ExecStop=/bin/sh -c '/usr/bin/docker ps | /bin/grep %p 1> /dev/null && /usr/bin/docker stop %p || true'
+ExecStartPre=/bin/sh -c '/usr/bin/docker ps | /bin/grep %p 1> /dev/null && /usr/bin/docker kill %p || true'
+ExecStartPre=/bin/sh -c '/usr/bin/docker ps -a | /bin/grep %p 1> /dev/null && /usr/bin/docker rm %p || true'
+ExecStartPre=/usr/bin/docker pull {{ promtail_image }}
+ExecStart=/usr/bin/docker run --rm \
+  --name %p \
+  --hostname %p \
+{% if promtail_network | default(False) %}
+  --network {{ promtail_network }} \
+{% endif %}
+  --volume /etc/promtail/config.yml:/etc/promtail/config.yml \
+{% for item in promtail_default_volumes + promtail_extra_volumes %}
+  --volume {{ item }} \
+{% endfor %}
+{% for item in promtail_default_publish + promtail_extra_publish %}
+  --publish {{ item }} \
+{% endfor %}
+  --health-cmd 'wget -q --spider http://localhost:9080/' \
+  --health-interval 30s \
+  --health-retries 5 \
+  --health-timeout 10s \
+  {{ promtail_image }} \
+  --config.file=/etc/promtail/config.yml
+
+[Install]
+WantedBy=multi-user.target

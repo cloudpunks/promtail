@@ -1,0 +1,22 @@
+# Standards: 1.2
+---
+galaxy_info:
+  role_name: promtail
+  namespace: cloudpunks
+  author: Patrick Kellenter
+  description: Ansible role to install and configure promtail
+  license: Apache-2.0
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
+  galaxy_tags:
+    - promtail
+    - logging
+    - monitoring
+
+dependencies: []
+
+...

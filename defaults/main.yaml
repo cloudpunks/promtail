@@ -1,0 +1,60 @@
+---
+
+# @var promtail_version:description: Version of the release to install
+promtail_version: 2.7.4
+
+# @var promtail_image:description: Docker image to use for deployment
+promtail_image: "grafana/promtail:{{ promtail_version }}"
+
+# @var promtail_network:description: Optional docker network to attach
+promtail_network:
+
+# @var promtail_default_folders:description: List of default folders to create
+promtail_default_folders:
+  - /etc/promtail
+
+# @var promtail_default_publish:description: List of default port publishing for docker
+# @var promtail_default_publish:example: >
+# promtail_default_publish:
+#   - 127.0.0.1:3100:3100
+# @end
+promtail_default_publish: []
+
+# @var promtail_extra_publish:description: List of extra port publishing for docker
+# @var promtail_extra_publish:example: >
+# promtail_extra_publish:
+#   - 127.0.0.1:3100:3100
+# @end
+promtail_extra_publish: []
+
+# @var promtail_extra_folders:description: List of extra folders to create
+# @var promtail_extra_folders:example: >
+# promtail_extra_folders:
+#   - /path/to/host/folder1
+#   - /path/to/host/folder2
+#   - /path/to/host/folder3
+# @end
+promtail_extra_folders: []
+
+# @var promtail_default_volumes:description: List of default volumes to mount for docker
+promtail_default_volumes:
+  - /etc/promtail:/etc/promtail
+
+# promtail_extra_volumes:
+#   - /path/to/host/folder1:/path/within/container1
+#   - /path/to/host/folder2:/path/within/container2
+#   - /path/to/host/folder3:/path/within/container3
+# @end
+promtail_extra_volumes: []
+
+promtail_clients:
+- url: http://localhost:3100/promtail/api/v1/push
+
+promtail_scrape_configs:
+- job_name: system
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: varlogs
+      __path__: /var/log/*log
