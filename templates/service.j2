@@ -25,10 +25,6 @@ ExecStart=/usr/bin/docker run --rm \
 {% for item in promtail_default_publish + promtail_extra_publish %}
   --publish {{ item }} \
 {% endfor %}
-  --health-cmd 'wget -q --spider http://localhost:9080/' \
-  --health-interval 30s \
-  --health-retries 5 \
-  --health-timeout 10s \
   {{ promtail_image }} \
   --config.file=/etc/promtail/config.yml
 
